@@ -1,5 +1,5 @@
-# SuperJogoDaVelha
-Super jogo da velha implementado no assembly do ICMC
+#Jogo Da Velha
+Jogo da velha implementado no assembly do ICMC
 
 ## Membros:
 </td>
