@@ -1,5 +1,5 @@
-#Jogo Da Velha
-Jogo da velha implementado no assembly do ICMC
+#Pong
+Pong implementado no assembly do ICMC
 
 ## Membros:
 </td>
