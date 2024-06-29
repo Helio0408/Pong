@@ -24,10 +24,10 @@ cenario: string "+--------------------------------------+|     CAASO: 1     ||  
 
 ;---- Inicio do Programa Principal -----
 
-VARIAVEIS SALVAS:
-r3 = tamanho da linha
-r6 = posicao da barra 1
-r7 = posicao da barra 2
+;VARIAVEIS SALVAS:
+;r3 = tamanho da linha
+;r6 = posicao da barra 1
+;r7 = posicao da barra 2
 
 main:
 	loadn r3, #40 		; Tamanho da linha
