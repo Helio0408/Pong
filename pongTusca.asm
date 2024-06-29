@@ -24,38 +24,43 @@ cenario: string "+--------------------------------------+|     CAASO: 1     ||  
 
 ;---- Inicio do Programa Principal -----
 
-main:
-	loadn r3, #40 		; Passar pra nova linha
+VARIAVEIS SALVAS:
+r3 = tamanho da linha
+r6 = posicao da barra 1
+r7 = posicao da barra 2
 
-	call InicioPrint
+main:
+	loadn r3, #40 		; Tamanho da linha
+
+	call InicioPrint	; Printa a tela de inicio
 	
-	call InputLoop
+	call InputLoop		; Loop esperando input para sair da tela inicial
 	
-	call CenaPrint
+	call CenaPrint		; Printa o cenario
 	
-	loadn r6, #481		; Posicao na tela da barra 1
-	loadn r1, #'#'		; Carrega r1 com o endereco do vetor que contem a mensagem
+	loadn r6, #481		; Posicao inicial da barra 1 na tela
+	loadn r1, #'#'		; Unidade da barra
 	loadn r2, #2816		; Cor = amarelo
 	
-	mov r0, r6
-	call BarraPrint
+	mov r0, r6		; Copia o valor de r6 para r0
+	call BarraPrint		; Printa a barra 1
 	
-	loadn r7, #518		; Posicao na tela da barra 2
-	loadn r1, #'#'		; Carrega r1 com o endereco do vetor que contem a mensagem
+	loadn r7, #518		; Posicao inicial da barra 2 na tela
+	loadn r1, #'#'		; Unidade da barra
 	loadn r2, #2304		; Cor = vermelho
 	
-	mov r0, r7
-	call BarraPrint
+	mov r0, r7		; Copia o valor de r7 para r0
+	call BarraPrint		; Printa a barra 2
 	
-	loadn r0, #619
-	call BolaPrint
+	loadn r0, #619		; Posicao da bola na tela
+	call BolaPrint		; Printa a bola
 	
 move:
-	call MoveLoop
-	jmp move
+	call MoveLoop		; Chama o loop de movimento 
+	jmp move		; LOOP DE TESTE, TROCAR POR PULO CONDICIONAL
 	
-	jmp Fim
-	
+	jmp Fim			; Finaliza o programa
+		
 ;---- Fim do Programa Principal -----
 	
 ;---- Inicio das Subrotinas -----
@@ -80,7 +85,7 @@ ImprimestrLoop:
 	jmp ImprimestrLoop
 	
 ImprimestrSai:	
-	pop r4	; Resgata os valores dos registradores utilizados na Subrotina da Pilha
+	pop r4			; Resgata os valores dos registradores utilizados na Subrotina da Pilha
 	pop r3
 	pop r2
 	pop r1
@@ -88,7 +93,7 @@ ImprimestrSai:
 	rts
 
 InicioPrint:
-	loadn r0, #374		; Posicao na tela onde a mensagem sera' escrita
+	loadn r0, #374		; Posicao na tela onde a mensagem sera escrita
 	loadn r1, #inicio	; Carrega r1 com o endereco do vetor que contem a mensagem
 	loadn r2, #0		; Cor = branco
 	
@@ -96,7 +101,7 @@ InicioPrint:
 	rts
 
 CenaPrint:
-	loadn r0, #0		; Posicao na tela onde a mensagem sera' escrita
+	loadn r0, #0		; Posicao na tela onde a mensagem sera escrita
 	loadn r1, #cenario	; Carrega r1 com o endereco do vetor que contem a mensagem
 	loadn r2, #0		; Cor = branco
 	
@@ -104,10 +109,10 @@ CenaPrint:
 	rts
 	
 BarraPrint:	
-	add r1, r1, r2
-	outchar	r1, r0
+	add r1, r1, r2		; Define a cor da barra
+	outchar	r1, r0		; Printa o primeiro caractere da barra
 	
-	add r0, r0, r3
+	add r0, r0, r3		; Passa pra prox pos da barra (prox linha)
 	outchar r1, r0
 	add r0, r0, r3
 	outchar r1, r0
@@ -125,69 +130,69 @@ BarraPrint:
 	rts
 
 BolaPrint:
-	loadn r1, #'O'
-	outchar r1, r0
+	loadn r1, #'O'		; Define a bola como 'O'
+	outchar r1, r0		; Printa a bola
 	
 	rts
 
 InputLoop:
-	loadn r5, #255
-	inchar r2
-	
-	cmp r2, r5
-	jeq InputLoop
+	loadn r5, #255		; Carrega r5 com o valor de input nulo
+	inchar r2		; Salva o valor do input recebido em r2
+		
+	cmp r2, r5		; Verifica se o input foi nulo
+	jeq InputLoop		; Se for nulo continua no loop
 	
 	rts	
 	
 MoveLoop:
-	call InputLoop
-	loadn r4, #'s'
+	call InputLoop		; Espera um input nao nulo
+	loadn r4, #'s'		
 	loadn r5, #'w'
 	
-	cmp r2, r5
-	jeq MoveUp
+	cmp r2, r5		
+	jeq MoveUp		; Se o input for 'w' move pra cima
 	
 	cmp r2, r4
-	jeq MoveD
+	jeq MoveD		; Se o input for 's' move pra baixo
 	
-	jmp MoveLoop
+	jmp MoveLoop		; Se nao for nenhum dos dois espera novo input
 	
 MoveUp:
-	mov r0, r6
-	sub r0, r0, r3
+	mov r0, r6		; Copia o valor de r6(Pos barra 1) para r0
+	sub r0, r0, r3		; Subtrai uma linha da posicao da barra 1
 	
-	loadn r2, #2816
-	loadn r1, #'#'
-	add r1, r1, r2
-	outchar r1, r0
+	loadn r2, #2816		
+	loadn r1, #'#'	
+	add r1, r1, r2		
+	outchar r1, r0		; Printa um caractere de barra na nova posicao da barra 1
 	
-	loadn r5, #320
-	add r0, r0, r5
+	loadn r5, #320		
+	add r0, r0, r5		; Passa para o endereco do caractere mais baixo da barra
 	
 	loadn r1, #' '
-	outchar r1, r0
+	outchar r1, r0		; Apaga esse caractere
 	
-	sub r6, r6, r3
+	sub r6, r6, r3		; Coloca a posicao da barra 1 uma linha pra cima
 	
 	rts
 
 MoveD:
-	mov r0, r6
+	mov r0, r6		; Copia o valor de r6(Pos barra 1) para r0
 	loadn r1, #' '	
-	outchar r1, r0
+	outchar r1, r0		; Apaga o caractere mais alto da barra 1
 	
 	loadn r2, #2816
 	loadn r1, #'#'
 	add r1, r1, r2
 	
 	loadn r5, #320
-	add r0, r0, r5
+	add r0, r0, r5		; Passa para o endereco abaixo do caractere mais baixo da barra
 	
-	outchar r1, r0
+	outchar r1, r0		; Printa um caractere de barra na nova posicao da barra 1
 	
-	add r6, r6, r3
+	add r6, r6, r3		; Coloca a barra 1 uma linha pra baixo
 	
 	rts
 	
 Fim:
-	halt
+	halt			; Encerra o programa
