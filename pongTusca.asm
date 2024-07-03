@@ -18,9 +18,30 @@
 ; 3584 aqua							1110 0000
 ; 3840 branco						1111 0000
 
+jmp main
+
 inicio: string "PONG TUSCA                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 aperte qualquer tecla                       para comecar"
-cenario: string "+--------------------------------------+|     CAASO: 1     ||    Federal: 0    |+--------------------------------------+|                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      |+--------------------------------------+"
+cenario: string "+--------------------------------------+|     CAASO: 0     ||    Federal: 0    |+--------------------------------------+|                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      |+--------------------------------------+"
+caaso_vit: string "VITORIA DO CAASO"
+fed_vit: string "JOGO INVALIDO"
+
 ;time1: string "CAASO: "
+
+vbola: var #1
+
+dbh: var #1
+static dbh + #0, #0
+dbv: var #1
+static dbv + #0, #0
+
+pbola: var #1	
+static pbola +#0, #619
+
+pcaaso: var #1
+static pcaaso + #0, #0
+
+pfed: var #1
+static pfed + #0, #0
 
 ;---- Inicio do Programa Principal -----
 
@@ -34,10 +55,7 @@ main:
 
 	call InicioPrint	; Printa a tela de inicio
 	
-	call InputLoopIni		; Loop esperando input para sair da tela inicial
-	
-	call Delay
-	call Delay
+	call InputLoop		; Loop esperando input para sair da tela inicial
 	
 	call CenaPrint		; Printa o cenario
 	
@@ -54,13 +72,11 @@ main:
 	
 	mov r0, r7		; Copia o valor de r7 para r0
 	call BarraPrint		; Printa a barra 2
-	
-	loadn r0, #619		; Posicao da bola na tela
+
 	call BolaPrint		; Printa a bola
 	
 move:
-	call MoveLoop		; Chama o loop de movimento
-	
+	call MoveLoop		; Chama o loop de movimento 
 	jmp move		; LOOP DE TESTE, TROCAR POR PULO CONDICIONAL
 	
 	jmp Fim			; Finaliza o programa
@@ -94,6 +110,27 @@ ImprimestrSai:
 	pop r2
 	pop r1
 	pop r0
+	rts
+
+PrintPlacar:
+	loadn r0, #pcaaso		; Posicao da bola na tela
+	loadi r0, r0
+	
+	loadn r1, #'0'
+	add r1, r1, r0
+	
+	loadn r0, #53
+	outchar r1, r0		; Printa a bola
+	
+	loadn r0, #pfed		; Posicao da bola na tela
+	loadi r0, r0
+	
+	loadn r1, #'0'
+	add r1, r1, r0
+	
+	loadn r0, #74
+	outchar r1, r0		; Printa a bola
+	
 	rts
 
 InicioPrint:
@@ -140,24 +177,19 @@ ColisaoTopo:
 	rts
 
 BolaPrint:
+	loadn r0, #pbola		; Posicao da bola na tela
+	loadi r0, r0
 	loadn r1, #'O'		; Define a bola como 'O'
 	outchar r1, r0		; Printa a bola
 	
 	rts
 
-InputLoopIni:
-	loadn r5, #255		; Carrega r5 com o valor de input nulo
-	inchar r2		; Salva o valor do input recebido em r2
-	
-	cmp r2, r5		; Verifica se o input foi nulo
-	jeq InputLoopIni		; Se for nulo continua no loop
-	
-	rts	
-	
-
 InputLoop:
+	call MoveBola
+	call BolaPrint
+	call PrintPlacar
+
 	inchar r2		; Salva o valor do input recebido em r2
-	
 	rts	
 	
 MoveLoop:
@@ -297,7 +329,7 @@ Delay:
 	
 	loadn r0, #0
 	loadn r1, #60000
-	
+
 loopdelay:
 	inc r0
 	cmp r0, r1
@@ -306,8 +338,244 @@ loopdelay:
 	pop r1
 	pop r0
 	
-	rts				;return
+	rts		
+	
+MoveBola:
+	loadn r0, #pbola		; Posicao da bola na tela
+	loadi r0, r0
+	loadn r1, #' '		; Define a bola como 'O'
+	outchar r1, r0		; Printa a bola
 
+	loadn r1, #dbv
+	loadi r1, r1
+	loadn r0, #0
+	cmp r0, r1
+	
+	jeq mbd
+	jmp mbu
+
+ret_b1:
+	loadn r0, #pbola		; Posicao da bola na tela
+	loadi r0, r0
+	loadn r1, #' '		; Define a bola como 'O'
+	outchar r1, r0		; Printa a bola
+
+	loadn r1, #dbh
+	loadi r1, r1
+	loadn r0, #0
+	cmp r0, r1
+	
+	jeq mbl
+	jmp mbr
+	
+ret_b2:
+	rts
+	
+mbd:
+	loadn r0, #pbola
+	loadi r0, r0
+	
+	loadn r1, #1120
+	cmp r1, r0
+	jle ColBolaBaixo
+
+	loadn r1, #40
+	loadn r0, #pbola
+	loadi r0, r0 
+	add r0, r0, r1
+	
+	store pbola, r0
+	jmp ret_b1
+	
+ColBolaBaixo:
+	loadn r0, #1
+	store dbv, r0
+	jmp MoveBola
+
+mbu:
+	loadn r0, #pbola
+	loadi r0, r0
+	
+	loadn r1, #160
+	cmp r1, r0
+	jgr ColBolaCima
+	
+	loadn r1, #40
+	loadn r0, #pbola
+	loadi r0, r0 
+	sub r0, r0, r1
+	
+	store pbola, r0
+	jmp ret_b1
+	
+ColBolaCima:
+	loadn r0, #0
+	store dbv, r0
+	jmp MoveBola
+
+mbl:
+	loadn r0, #pbola
+	loadn r1, #40
+	loadi r0, r0
+	mod r0, r0, r1 
+	
+	loadn r1, #2
+	cmp r1, r0
+	jeg ColBolaEsq
+	
+	loadn r1, #1
+	loadn r0, #pbola
+	loadi r0, r0 
+	sub r0, r0, r1
+	
+	store pbola, r0
+	jmp ret_b2
+
+ColBolaEsq:
+	loadn r1, #40
+	loadn r0, #pbola
+	loadi r0, r0
+	div r0, r0, r1
+	div r1, r6, r1
+	loadn r2, #8
+	add r2, r1, r2
+
+	cmp r0, r1
+	
+	jle nao_colidiu_fed
+	
+	cmp r0, r2
+	
+	jeg nao_colidiu_fed
+	
+ret_fed:
+	loadn r0, #1
+	store dbh, r0
+	jmp MoveBola
+	
+nao_colidiu_fed:
+	loadn r0, #pfed
+	loadi r0, r0
+	inc r0
+	store pfed, r0 
+	
+	call ResetBall
+	call ChecarVitoria
+	jmp ret_fed
+
+mbr:
+	loadn r0, #pbola
+	loadn r1, #40
+	loadi r0, r0
+	mod r0, r0, r1 
+	
+	loadn r1, #36
+	cmp r1, r0
+	jle ColBolaDir
+	
+	loadn r1, #1
+	loadn r0, #pbola
+	loadi r0, r0 
+	add r0, r0, r1
+	
+	store pbola, r0
+	jmp ret_b2
+	
+ColBolaDir:
+	loadn r1, #40
+	loadn r0, #pbola
+	loadi r0, r0
+	div r0, r0, r1
+	div r1, r7, r1
+	loadn r2, #8
+	add r2, r1, r2
+
+	cmp r0, r1
+	
+	jle nao_colidiu	
+	
+	cmp r0, r2
+	
+	jeg nao_colidiu
+
+col_retorno:
+	loadn r0, #0
+	store dbh, r0
+	jmp MoveBola
+	rts
+
+
+nao_colidiu:
+	loadn r0, #pcaaso
+	loadi r0, r0
+	inc r0
+	store pcaaso, r0 
+	
+	call ResetBall
+	call ChecarVitoria
+	jmp col_retorno
+
+
+	
+ChecarVitoria:
+	loadn r2, #5 
+	loadn r0, #pcaaso
+	loadi r0, r0
+	
+	cmp r2, r0
+	
+	jeq VitoriaCaaso
+
+	loadn r0, #pfed
+	loadi r0, r0
+	
+	cmp r2, r0
+
+	jeq VitoriaFederal
+	rts
+
+	
+VitoriaCaaso:
+	call PrintPlacar
+	loadn r0, #611			; Posicao na tela onde a mensagem sera escrita
+	loadn r1, #caaso_vit	; Carrega r1 com o endereco do vetor que contem a mensagem
+	loadn r2, #2816			; Cor = branco
+	call Imprimestr
+	
+	jmp Fim
+
+VitoriaFederal:
+	call PrintPlacar
+	loadn r0, #613		; Posicao na tela onde a mensagem sera escrita
+	loadn r1, #fed_vit	; Carrega r1 com o endereco do vetor que contem a mensagem
+	loadn r2, #2304		; Cor = branco
+	call Imprimestr
+	jmp Fim
+	
+ResetBall:
+	loadn r0, #619
+	store pbola, r0
+	
+delay:
+	push r0
+	push r1
+	
+	loadn r0, #0
+	loadn r1, #65000
+	
+init_delay:
+	inc r0
+	nop
+	nop
+	nop
+	nop
+	cmp r0, r1
+	jne init_delay
+	
+	pop r1
+	pop r0
+	rts
 	
 Fim:
 	halt			; Encerra o programa
+
