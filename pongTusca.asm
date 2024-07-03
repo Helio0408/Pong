@@ -55,7 +55,7 @@ main:
 
 	call InicioPrint	; Printa a tela de inicio
 	
-	call InputLoop		; Loop esperando input para sair da tela inicial
+	call InputLoopIni		; Loop esperando input para sair da tela inicial
 	
 	call CenaPrint		; Printa o cenario
 	
@@ -80,10 +80,16 @@ move:
 	jmp move		; LOOP DE TESTE, TROCAR POR PULO CONDICIONAL
 	
 	jmp Fim			; Finaliza o programa
-		
-;---- Fim do Programa Principal -----
 	
-;---- Inicio das Subrotinas -----
+InputLoopIni:
+	loadn r5, #255		; Carrega r5 com o valor de input nulo
+	inchar r2		; Salva o valor do input recebido em r2
+	
+	cmp r2, r5		; Verifica se o input foi nulo
+	jeq InputLoopIni		; Se for nulo continua no loop
+	
+	rts	
+	
 	
 Imprimestr:	;  Rotina de Impresao de Mensagens:    r0 = Posicao da tela que o primeiro caractere da mensagem sera' impresso;  r1 = endereco onde comeca a mensagem; r2 = cor da mensagem.   Obs: a mensagem sera' impressa ate' encontrar "/0"
 	push r0	; protege o r0 na pilha para preservar seu valor
@@ -211,21 +217,11 @@ MoveLoop:
 	cmp r2, r0		
 	jeq MoveD2
 	
+	call Delay	
 	call Delay
+	call Delay	
 	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
-	call Delay
+	call Delay	
 	call Delay
 	
 	jmp MoveLoop		; Se nao for nenhum dos dois espera novo input
@@ -446,7 +442,7 @@ ColBolaEsq:
 	
 	cmp r0, r2
 	
-	jeg nao_colidiu_fed
+	jgr nao_colidiu_fed
 	
 ret_fed:
 	loadn r0, #1
@@ -496,7 +492,7 @@ ColBolaDir:
 	
 	cmp r0, r2
 	
-	jeg nao_colidiu
+	jgr nao_colidiu
 
 col_retorno:
 	loadn r0, #0

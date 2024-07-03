@@ -40,10 +40,14 @@ Para ser usada em assembly, basta escrever da seguinte forma:
     rnd rx ry
 ```
 
+Dessa forma, o ry sofrerá a operação e seu valor será salvo no rx.
+
 ## Rodando o jogo no processador
-Extraia o arquivo .zip desse diretório. Depois é só abrir e rodar com
-o quartus. As modificações foram feitas na cpu.vhd e na cpuram.mif, sendo
-o código em vhdl da cpu e o binário do jogo respectivamente.
+
+Baixe e extraia o processador do ICMC pelo [link](https://github.com/simoesusp/Processador-ICMC/tree/master/Processor_FPGA).
+Substitua a cpu.vhd desse diretório da cpu.
+Renomeie o jogo para cpuram.mif e copie para o diretório da cpu.
+Compile e rode na FPGA!
 
 ## Compilador Online
 https://proc.giroto.dev/
