@@ -34,7 +34,10 @@ main:
 
 	call InicioPrint	; Printa a tela de inicio
 	
-	call InputLoop		; Loop esperando input para sair da tela inicial
+	call InputLoopIni		; Loop esperando input para sair da tela inicial
+	
+	call Delay
+	call Delay
 	
 	call CenaPrint		; Printa o cenario
 	
@@ -56,7 +59,8 @@ main:
 	call BolaPrint		; Printa a bola
 	
 move:
-	call MoveLoop		; Chama o loop de movimento 
+	call MoveLoop		; Chama o loop de movimento
+	
 	jmp move		; LOOP DE TESTE, TROCAR POR PULO CONDICIONAL
 	
 	jmp Fim			; Finaliza o programa
@@ -128,6 +132,12 @@ BarraPrint:
 	outchar r1, r0
 	
 	rts
+	
+ColisaoBaixo:
+	rts
+
+ColisaoTopo:
+	rts
 
 BolaPrint:
 	loadn r1, #'O'		; Define a bola como 'O'
@@ -135,12 +145,18 @@ BolaPrint:
 	
 	rts
 
-InputLoop:
+InputLoopIni:
 	loadn r5, #255		; Carrega r5 com o valor de input nulo
 	inchar r2		; Salva o valor do input recebido em r2
-		
+	
 	cmp r2, r5		; Verifica se o input foi nulo
-	jeq InputLoop		; Se for nulo continua no loop
+	jeq InputLoopIni		; Se for nulo continua no loop
+	
+	rts	
+	
+
+InputLoop:
+	inchar r2		; Salva o valor do input recebido em r2
 	
 	rts	
 	
@@ -148,18 +164,48 @@ MoveLoop:
 	call InputLoop		; Espera um input nao nulo
 	loadn r4, #'s'		
 	loadn r5, #'w'
+	loadn r0, #'j'
+	loadn r1, #'i'
 	
 	cmp r2, r5		
-	jeq MoveUp		; Se o input for 'w' move pra cima
+	jeq MoveUp1		; Se o input for 'w' move pra cima
 	
 	cmp r2, r4
-	jeq MoveD		; Se o input for 's' move pra baixo
+	jeq MoveD1		; Se o input for 's' move pra baixo
+	
+	cmp r2, r1		
+	jeq MoveUp2
+	
+	cmp r2, r0		
+	jeq MoveD2
+	
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
+	call Delay
 	
 	jmp MoveLoop		; Se nao for nenhum dos dois espera novo input
 	
-MoveUp:
+	
+MoveUp1:
 	mov r0, r6		; Copia o valor de r6(Pos barra 1) para r0
 	sub r0, r0, r3		; Subtrai uma linha da posicao da barra 1
+	
+	loadn r1, #121
+	cmp r1, r0
+	jgr ColisaoTopo
 	
 	loadn r2, #2816		
 	loadn r1, #'#'	
@@ -173,11 +219,16 @@ MoveUp:
 	outchar r1, r0		; Apaga esse caractere
 	
 	sub r6, r6, r3		; Coloca a posicao da barra 1 uma linha pra cima
-	
+
 	rts
 
-MoveD:
+MoveD1:
 	mov r0, r6		; Copia o valor de r6(Pos barra 1) para r0
+	
+	loadn r1, #840
+	cmp r1, r6
+	jle ColisaoBaixo
+	
 	loadn r1, #' '	
 	outchar r1, r0		; Apaga o caractere mais alto da barra 1
 	
@@ -193,6 +244,70 @@ MoveD:
 	add r6, r6, r3		; Coloca a barra 1 uma linha pra baixo
 	
 	rts
+	
+MoveUp2:
+	mov r0, r7		; Copia o valor de r6(Pos barra 1) para r0
+	sub r0, r0, r3		; Subtrai uma linha da posicao da barra 1
+	
+	loadn r1, #158
+	cmp r1, r0
+	jgr ColisaoTopo
+	
+	loadn r2, #2304		
+	loadn r1, #'#'	
+	add r1, r1, r2		
+	outchar r1, r0		; Printa um caractere de barra na nova posicao da barra 1
+	
+	loadn r5, #320		
+	add r0, r0, r5		; Passa para o endereco do caractere mais baixo da barra
+	
+	loadn r1, #' '
+	outchar r1, r0		; Apaga esse caractere
+	
+	sub r7, r7, r3		; Coloca a posicao da barra 1 uma linha pra cima
+
+	rts
+
+MoveD2:
+	mov r0, r7		; Copia o valor de r6(Pos barra 1) para r0
+	
+	loadn r1, #877
+	cmp r1, r0
+	jle ColisaoBaixo
+	
+	loadn r1, #' '	
+	outchar r1, r0		; Apaga o caractere mais alto da barra 1
+	
+	loadn r2, #2304
+	loadn r1, #'#'
+	add r1, r1, r2
+	
+	loadn r5, #320
+	add r0, r0, r5		; Passa para o endereco abaixo do caractere mais baixo da barra
+	
+	outchar r1, r0		; Printa um caractere de barra na nova posicao da barra 1
+	
+	add r7, r7, r3		; Coloca a barra 1 uma linha pra baixo
+	
+	rts
+
+Delay:
+	push r0
+	push r1
+	
+	loadn r0, #0
+	loadn r1, #60000
+	
+loopdelay:
+	inc r0
+	cmp r0, r1
+	jne loopdelay		
+	
+	pop r1
+	pop r0
+	
+	rts				;return
+
 	
 Fim:
 	halt			; Encerra o programa
