@@ -18,9 +18,11 @@
 ; 3584 aqua							1110 0000
 ; 3840 branco						1111 0000
 
-jmp main
+reset:
 
-inicio: string "PONG TUSCA                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 aperte qualquer tecla                       para comecar"
+
+limpa: string "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "
+inicio: string "PONG TUSCA                                                                                                                                                                                                                                                                                                                                                                                                                                                                               aperte espaco para comecar"
 cenario: string "+--------------------------------------+|     CAASO: 0     ||    Federal: 0    |+--------------------------------------+|                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      ||                                      |+--------------------------------------+"
 caaso_vit: string "VITORIA DO CAASO"
 fed_vit: string "JOGO INVALIDO"
@@ -52,10 +54,20 @@ static pfed + #0, #0
 
 main:
 	loadn r3, #40 		; Tamanho da linha
+	
+	call Delay
+	call Delay
+	call Delay
+	call Delay
 
 	call InicioPrint	; Printa a tela de inicio
 	
 	call InputLoopIni		; Loop esperando input para sair da tela inicial
+	
+	call Delay
+	call Delay
+	call Delay
+	call Delay
 	
 	call CenaPrint		; Printa o cenario
 	
@@ -82,11 +94,11 @@ move:
 	jmp Fim			; Finaliza o programa
 	
 InputLoopIni:
-	loadn r5, #255		; Carrega r5 com o valor de input nulo
+	loadn r5, #32		; Carrega r5 com o valor de input nulo
 	inchar r2		; Salva o valor do input recebido em r2
 	
 	cmp r2, r5		; Verifica se o input foi nulo
-	jeq InputLoopIni		; Se for nulo continua no loop
+	jne InputLoopIni		; Se for nulo continua no loop
 	
 	rts	
 	
@@ -191,15 +203,16 @@ BolaPrint:
 	rts
 
 InputLoop:
-	call MoveBola
-	call BolaPrint
-	call PrintPlacar
-
 	inchar r2		; Salva o valor do input recebido em r2
 	rts	
 	
 MoveLoop:
 	call InputLoop		; Espera um input nao nulo
+	
+	call MoveBola
+	call BolaPrint
+	call PrintPlacar
+	
 	loadn r4, #'s'		
 	loadn r5, #'w'
 	loadn r0, #'j'
@@ -210,19 +223,19 @@ MoveLoop:
 	
 	cmp r2, r4
 	jeq MoveD1		; Se o input for 's' move pra baixo
-	
+
+ret_move1:
+
 	cmp r2, r1		
 	jeq MoveUp2
 	
 	cmp r2, r0		
 	jeq MoveD2
 	
-	call Delay	
+ret_move2:
+	
 	call Delay
 	call Delay	
-	call Delay
-	call Delay	
-	call Delay
 	
 	jmp MoveLoop		; Se nao for nenhum dos dois espera novo input
 	
@@ -248,7 +261,7 @@ MoveUp1:
 	
 	sub r6, r6, r3		; Coloca a posicao da barra 1 uma linha pra cima
 
-	rts
+	jmp ret_move1
 
 MoveD1:
 	mov r0, r6		; Copia o valor de r6(Pos barra 1) para r0
@@ -271,7 +284,7 @@ MoveD1:
 	
 	add r6, r6, r3		; Coloca a barra 1 uma linha pra baixo
 	
-	rts
+	jmp ret_move1
 	
 MoveUp2:
 	mov r0, r7		; Copia o valor de r6(Pos barra 1) para r0
@@ -294,7 +307,7 @@ MoveUp2:
 	
 	sub r7, r7, r3		; Coloca a posicao da barra 1 uma linha pra cima
 
-	rts
+	jmp ret_move2
 
 MoveD2:
 	mov r0, r7		; Copia o valor de r6(Pos barra 1) para r0
@@ -317,14 +330,14 @@ MoveD2:
 	
 	add r7, r7, r3		; Coloca a barra 1 uma linha pra baixo
 	
-	rts
+	jmp ret_move2
 
 Delay:
 	push r0
 	push r1
 	
 	loadn r0, #0
-	loadn r1, #60000
+	loadn r1, #6000
 
 loopdelay:
 	inc r0
@@ -573,5 +586,21 @@ init_delay:
 	rts
 	
 Fim:
+	loadn r5, #32		; Carrega r5 com o valor de input nulo
+	inchar r2		; Salva o valor do input recebido em r2
+	
+	cmp r2, r5		; Verifica se o input foi nulo
+	jne Fim		; Se for nulo continua no loop
+	
+	loadn r0, #0
+	store pcaaso, r0
+	store pfed, r0
+	
+	loadn r0, #0		; Posicao na tela onde a mensagem sera escrita
+	loadn r1, #limpa	; Carrega r1 com o endereco do vetor que contem a mensagem
+	loadn r2, #0		; Cor = branco
+	
+	call Imprimestr
+	
+	jmp reset
 	halt			; Encerra o programa
-
