@@ -49,5 +49,9 @@ Substitua a cpu.vhd desse diretório da cpu.
 Renomeie o jogo para cpuram.mif e copie para o diretório da cpu.
 Compile e rode na FPGA!
 
+## Vídeo explicando e rodando o jogo
+
+O vídeo explicando e rodando o jogo pode ser encontrado [aqui](https://youtu.be/2rfjKbdIPyg).
+
 ## Compilador Online
 https://proc.giroto.dev/
