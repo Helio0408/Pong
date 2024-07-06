@@ -851,7 +851,7 @@ BEGIN
 						auxFR(6) <= '0';
 					END IF;	
 				WHEN RND =>
-					IF(X(15) = '1') THEN
+					IF(X(0) = '1') THEN
 					Aux(14 DOWNTO 0) := x(15 DOWNTO 1);
 					aux(15) := '0';
 						AUX := AUX xor "1001100010111000";
